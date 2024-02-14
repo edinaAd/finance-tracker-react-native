@@ -27,17 +27,13 @@ const BottomNavigationComponent = () => {
 	
 	const handleLogout = async () => {
 		try {
-			console.log('hinaaaa')
 			await logout();
-			// navigate('/');
 			navigation.navigate('login');
-
-
 		} catch (error) {
 			throw (error);
 		}
-
 	};
+	
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'dashboard', title: 'Dashboard', focusedIcon: 'view-dashboard' },

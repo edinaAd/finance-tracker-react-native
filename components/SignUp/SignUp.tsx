@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { View, Text, SafeAreaView, Image, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { Button, IconButton, TextInput } from 'react-native-paper';
 import { UserAuth } from '../../context/AuthContext';
+import { MessageType } from '../../types/MessageType.enum';
+import InfoDialog from '../InfoDialog/InfoDialog';
 
 const SignUp = () => {
 	const { createUser } = UserAuth();
@@ -17,6 +19,21 @@ const SignUp = () => {
 
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+	const handleNameChange = (text: string) => {
+		setName(text);
+		setError('');
+	};
+
+	const handleEmailChange = (text: string) => {
+		setRegisterEmail(text);
+		setError('');
+	};
+
+	const handlePasswordChange = (text: string) => {
+		setRegisterPassword(text);
+		setError('');
+	};
+
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		setError('');
@@ -27,15 +44,17 @@ const SignUp = () => {
 			}
 
 			await createUser(registerEmail, registerPassword, name);
-			// navigate('/')
+			setName('');
+			setRegisterEmail('');
+			setRegisterPassword('');
 		} catch (error: any) {
-			console.log("signup",error)
 			if (error.code === "ERR_BAD_REQUEST") setError("Invalid username or password");
 			else setError("Error: Request failed");
 		}
 	};
 	return (
 		<SafeAreaView style={styles.container}>
+			{error && <InfoDialog type={MessageType.ERROR} message={error} open={true} ></InfoDialog>}
 			<KeyboardAvoidingView behavior="padding">
 				<View style={styles.container}>
 					<View >
@@ -53,7 +72,7 @@ const SignUp = () => {
 							<TextInput
 								label="Name"
 								value={name}
-								onChangeText={setName}
+								onChangeText={handleNameChange}
 								style={styles.emailInput}
 							/>
 						</View>
@@ -61,7 +80,7 @@ const SignUp = () => {
 							<TextInput
 								label="Email"
 								value={registerEmail}
-								onChangeText={setRegisterEmail}
+								onChangeText={handleEmailChange}
 								style={styles.emailInput}
 							/>
 						</View>
@@ -69,7 +88,7 @@ const SignUp = () => {
 							<TextInput
 								label="Password"
 								value={registerPassword}
-								onChangeText={setRegisterPassword}
+								onChangeText={handlePasswordChange}
 								secureTextEntry={!showPassword}
 								style={styles.input}
 							/>

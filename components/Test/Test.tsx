@@ -1,11 +1,89 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView, Text, View, StyleSheet } from "react-native";
+import { fetchExpenses, fetchIncomes } from '../../api/api-users';
+import { UserAuth } from '../../context/AuthContext';
 import DashboardChart from './DashboardChart';
 
+
+interface ExpenseData {
+    [date: string]: number;
+}
+
 const Test = () => {
-    const totalIncome = 10;
-    const totalExpenses = 20;
-    const balance = 30;
+    const { user } = UserAuth() ?? {};
+
+    const [totalExpenses, setTotalExpenses] = useState(0);
+    const [totalIncome, setTotalIncome] = useState(0);
+    const [chartData, setChartData] = useState<any>([]);
+
+    const balance = totalIncome - totalExpenses;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch expenses data
+                const expensesData = await fetchExpenses(user?.userId, user?.authToken);
+                let totalExpenses = 0;
+                const expensesByDate: ExpenseData = {};
+
+
+                expensesData.documents.forEach((document: any) => {
+                    const expense = document.fields;
+                    const date = new Date(expense.date.timestampValue).toLocaleDateString();
+                    totalExpenses += parseFloat(expense.total.integerValue);
+
+                    if (expensesByDate[date]) {
+                        expensesByDate[date] += parseFloat(expense.total.integerValue);
+                    } else {
+                        expensesByDate[date] = parseFloat(expense.total.integerValue);
+                    }
+                });
+
+                // Fetch incomes data
+                const incomesData = await fetchIncomes(user?.userId, user?.authToken);
+                let totalIncome = 0;
+                const incomeByDate: ExpenseData = {};
+
+                incomesData.documents.forEach((document: any) => {
+                    const income = document.fields;
+                    const date = new Date(income.date.timestampValue).toLocaleDateString();
+
+                    totalIncome += parseFloat(income.total.integerValue);
+
+                    if (incomeByDate[date]) {
+                        incomeByDate[date] += parseFloat(income.total.integerValue);
+                    } else {
+                        incomeByDate[date] = parseFloat(income.total.integerValue);
+                    }
+                });
+                const dates = Object.keys({ ...expensesByDate, ...incomeByDate }).sort();
+                const chartData = dates.map(date => [date, expensesByDate[date] || 0, incomeByDate[date] || 0]);
+
+                console.log(chartData)
+                setChartData(chartData);
+                setTotalExpenses(totalExpenses);
+                setTotalIncome(totalIncome);
+            } catch (error: any) {
+                console.error('Error fetching data:', error.message);
+            }
+        };
+
+        fetchData();
+
+    }, [user?.userId, user?.authToken]);
+	console.log("chartData", chartData)
+	const sortedChartData = chartData.slice().sort((a, b) => {
+		// Split the date strings into components
+		const [dayA, monthA, yearA] = a[0].split('.');
+		const [dayB, monthB, yearB] = b[0].split('.');
+
+		// Construct Date objects
+		const dateA = new Date(Number(yearA), Number(monthA) - 1, Number(dayA));
+		const dateB = new Date(Number(yearB), Number(monthB) - 1, Number(dayB));
+
+		// Compare the dates
+		return dateA.getTime() - dateB.getTime();
+	});
     return (
         <SafeAreaView>
             <View style={styles.container}>
@@ -32,7 +110,7 @@ const Test = () => {
                     </View>
                 </View>
                 <View>
-                    <DashboardChart />
+                    {sortedChartData.length > 0 && <DashboardChart chartData={sortedChartData} />}
                 </View>
             </View>
         </SafeAreaView>
