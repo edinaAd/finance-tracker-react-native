@@ -1,4 +1,9 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "types": ["react-native", "react-native-paper"],
+    
+    "skipLibCheck": true
+
+  },
   "extends": "expo/tsconfig.base"
 }
