@@ -11,7 +11,7 @@ function AppStack() {
 
 	return (
 		<Stack.Navigator initialRouteName="login"   screenOptions={{
-			headerShown: true,
+			headerShown: false,
 			headerTitle:'',
 			headerTransparent: true
 		}}>

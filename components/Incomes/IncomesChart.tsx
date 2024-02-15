@@ -1,65 +1,60 @@
-import React from 'react'
+import React from 'react';
 import { PieChart } from 'react-native-chart-kit';
-import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
-const IncomesChart = () => {
-    const data = [
-        {
-            name: "Seoul",
-            population: 21500000,
-            color: "rgba(131, 167, 234, 1)",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 12
-        },
-        {
-            name: "Toronto",
-            population: 2800000,
-            color: "#F00",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 12
-        },
-        {
-            name: "Beijing",
-            population: 527612,
-            color: "red",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 12
-        },
-        {
-            name: "New York",
-            population: 8538000,
-            color: "black",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 12
-        },
-        {
-            name: "Moscow",
-            population: 11920000,
-            color: "rgb(0, 0, 255)",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 12
+import { Dimensions, View, Text } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
+
+const IncomesChart = ({ chartData }) => {
+    const generateRandomColors = (numColors) => {
+        const colors = [];
+        for (let i = 0; i < numColors; i++) {
+            let color: any;
+            do {
+                color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+            } while (color === '#FFFFFF');
+            colors.push(color);
         }
-    ];
+        return colors;
+    };
+
+    const colors = generateRandomColors(chartData.length);
+
+    const dataWithColors = chartData.map((entry, index) => ({
+        ...entry,
+        color: colors[index],
+    }));
+
     const chartConfig = {
-        backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.5,
+        backgroundColor: '#FFF',
+        borderRadius: 100,
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
     };
-    return (
-        <PieChart
-            data={data}
-            width={screenWidth}
-            height={270}
-            chartConfig={chartConfig}
-            accessor={"population"}
-            backgroundColor={"transparent"}
-            paddingLeft={"5"}
-            center={[10, 0]}
-            absolute
-        />
-    )
-}
 
-export default IncomesChart
+    return (
+        <View style={{ alignItems: 'center', backgroundColor: 'white', marginTop: 10, borderRadius: 10, margin: 16, paddingBottom: 10 }}>
+            <PieChart
+                data={dataWithColors}
+                width={screenWidth - 30}
+                height={250}
+                chartConfig={chartConfig}
+                accessor="value"
+                backgroundColor="transparent"
+                paddingLeft="5"
+                center={[80, 0]}
+                absolute
+                hasLegend={false}
+            />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {dataWithColors.map((entry: any, index: any) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10, marginBottom: 5 }}>
+                        <View style={{ width: 10, height: 10, backgroundColor: entry.color, marginRight: 5, borderRadius: 5 }} />
+                        <Text>{`${entry.name}: $${entry.value}`}</Text>
+                    </View>
+                ))}
+            </View>
+        </View>
+
+    );
+};
+
+export default IncomesChart;

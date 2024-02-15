@@ -40,7 +40,9 @@ const DashboardChart = ({ chartData }) => {
 					style: {
 						borderRadius: 16,
 					},
+					
 				}}
+				verticalLabelRotation={15}
 				bezier 
 			/>
 		</View>

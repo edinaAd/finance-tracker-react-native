@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { BottomNavigation, Text, Icon, IconButton } from 'react-native-paper';
 import { UserAuth } from '../../context/AuthContext';
+import Categories from '../Categories/Categories';
 import Dashboard from '../Dashboard/Dashboard';
 import Incomes from '../Incomes/Incomes';
 import Login from '../Login/Login';
@@ -17,7 +18,7 @@ const IncomeRoute = () => <Incomes />;
 
 const ExpensesRoute = () => <Text>Expenses</Text>;
 
-const CategoriesRoute = () => <Text>Categories</Text>;
+const CategoriesRoute = () => <Categories />;
 
 
 const BottomNavigationComponent = () => {
@@ -28,7 +29,7 @@ const BottomNavigationComponent = () => {
 	const handleLogout = async () => {
 		try {
 			await logout();
-			navigation.navigate('login');
+			navigation.navigate('login', {});
 		} catch (error) {
 			throw (error);
 		}
@@ -37,8 +38,8 @@ const BottomNavigationComponent = () => {
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'dashboard', title: 'Dashboard', focusedIcon: 'view-dashboard' },
-		{ key: 'income', title: 'Income', focusedIcon: 'currency-usd' },
 		{ key: 'expenses', title: 'Expenses', focusedIcon: 'cash-multiple' },
+		{ key: 'income', title: 'Income', focusedIcon: 'currency-usd' },
 		{ key: 'categories', title: 'Categories', focusedIcon: 'format-list-bulleted' },
 		{ key: 'logout', title: 'Logout' },
 	]);
