@@ -15,7 +15,7 @@ export const categoryIcons: any = {
     'Groceries': <MaterialCommunityIcons name="basket" size={30} color="indigo" />,
     'Gifts': <MaterialCommunityIcons name="gift" size={30} color="violet" />,
     'Sport & Hobby': <MaterialCommunityIcons name="soccer" size={30} color="magenta" />,
-    'Beauty': <MaterialCommunityIcons name="face" size={30} color="grey" />,
+    'Beauty': <MaterialCommunityIcons name="account" size={30} color="grey" />,
     'Work': <MaterialCommunityIcons name="briefcase" size={30} color="navy" />,
     'Other': <MaterialCommunityIcons name="dots-horizontal" size={30} color="maroon" />,
     // // 

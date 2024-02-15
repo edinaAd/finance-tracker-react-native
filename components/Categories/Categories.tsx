@@ -1,32 +1,94 @@
 import * as React from 'react';
-import { View } from 'react-native';
-import { Button, Dialog, Portal, PaperProvider, Text } from 'react-native-paper';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, SegmentedButtons } from 'react-native-paper';
+import ExpensesContent from './ExpensesContent/ExpensesContent';
+import IncomesContent from './IncomesContent/IncomesContent';
 
 const Categories = () => {
-  const [visible, setVisible] = React.useState(false);
+	const [value, setValue] = React.useState('expenses');
 
-  const showDialog = () => setVisible(true);
+	const renderSelectedView = () => {
+		switch (value) {
+			case 'incomes':
+				return <IncomesContent />;
+			case 'expenses':
+				return <ExpensesContent />;
+			default:
+				return null;
+		}
+	};
 
-  const hideDialog = () => setVisible(false);
+	return (
+		<SafeAreaView style={styles.container}>
+			<View style={styles.mainView}>
+				<View style={styles.segmentedButtons}>
 
-  return (
-    <PaperProvider>
-      <View>
-        <Button onPress={showDialog}>Show Dialog</Button>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog}>
-            <Dialog.Title>Alert</Dialog.Title>
-            <Dialog.Content>
-              <Text variant="bodyMedium">This is simple dialog</Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideDialog}>Done</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-    </PaperProvider>
-  );
+					<SegmentedButtons
+						value={value}
+						style={styles.buttons}
+						onValueChange={setValue}
+						buttons={[
+							{
+								value: 'expenses',
+								label: 'Expenses',
+								style: {
+									borderColor: 'white',
+									borderRadius: 10,
+									borderTopRightRadius: 10,
+									borderBottomRightRadius: 10
+								}
+							},
+							{
+								value: 'incomes',
+								label: 'Incomes',
+								style: {
+									borderColor: 'white',
+									borderRadius: 10,
+									marginLeft: 20,
+									borderTopLeftRadius: 10,
+									borderBottomLeftRadius: 10
+								}
+							},
+						]}
+						theme={{ roundness: 2 }}
+					/>
+				</View>
+			</View>
+			{renderSelectedView()}
+		</SafeAreaView>
+	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#F0F0F0',
+		alignItems: 'center',
+	},
+	mainView: {
+		marginTop: 30,
+		width: '70%',
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 15,
+		marginBottom: 40
+	},
+	segmentedButtons: {
+		display: 'flex',
+		alignItems: 'center',
+	},
+	buttons: {
+		backgroundColor: 'white',
+		borderColor: 'white',
+		overflow: 'hidden',
+	},
+	selectedView: {
+		marginTop: 20,
+		padding: 10,
+		backgroundColor: '#E0E0E0',
+		borderRadius: 10,
+		alignItems: 'center',
+	},
+});
 
 export default Categories;
