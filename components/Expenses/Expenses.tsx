@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import { Text, Button, IconButton } from 'react-native-paper';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
-import IncomesChart from './IncomesChart';
 import { UserAuth } from '../../context/AuthContext';
-import { deleteIncome, fetchIncomes } from '../../api/api-users';
-import AddIncome from './AddIncome';
+import { deleteExpense, fetchExpenses } from '../../api/api-users';
+import ExpensesChart from './ExpensesChart';
+import AddExpense from './AddExpense';
 
-const Incomes = () => {
+const Expenses = () => {
 	const { user } = UserAuth();
 
 	const [open, setOpen] = useState(false);
-	const [incomes, setIncomes] = useState<any[]>([]);
+	const [expenses, setExpenses] = useState<any[]>([]);
 	const [chartData, setChartData] = useState<{ name: string, value: number }[]>([]);
-	const [editIncome, setEditIncome] = useState(null);
+	const [editExpense, setEditExpense] = useState(null);
 
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
 
-	const handleEditIncome = (income: any) => {
-		setEditIncome(income);
+	const handleEditExpense = (expense: any) => {
+		setEditExpense(expense);
 		setOpen(true);
 	};
 
-	const calculateChartData = (incomes: any[]) => {
+	const calculateChartData = (expenses: any[]) => {
 		const chartObj: any = {};
-		incomes.forEach(income => {
-			const category = income.category;
-			const total = parseFloat(income.total);
+		expenses.forEach(expense => {
+			const category = expense.category;
+			const total = parseFloat(expense.total);
 			if (chartObj[category]) {
 				chartObj[category] += total;
 			} else {
@@ -49,54 +49,54 @@ const Incomes = () => {
 	const handleClose = (response: any | null) => {
 		console.log(response);
 		if (response.fields) {
-			const income = response.fields;
-			const total = parseFloat(income.total.integerValue);
+			const expense = response.fields;
+			const total = parseFloat(expense.total.integerValue);
 			const updatedObj = {
 				docId: response.name.split("/").pop(),
-				name: income?.name?.stringValue,
-				date: income?.date?.timestampValue,
+				name: expense?.name?.stringValue,
+				date: expense?.date?.timestampValue,
 				total,
-				category: income?.category?.stringValue
+				category: expense?.category?.stringValue
 			};
 
-			const index = incomes.findIndex(x => x.docId === updatedObj.docId);
+			const index = expenses.findIndex(x => x.docId === updatedObj.docId);
 			if (index > -1) {
-				incomes[index] = updatedObj;
+				expenses[index] = updatedObj;
 			} else {
-				incomes.unshift(updatedObj)
+				expenses.unshift(updatedObj)
 			}
 
-			const updatedChartData = calculateChartData(incomes);
+			const updatedChartData = calculateChartData(expenses);
 			setChartData(updatedChartData);
 
 		}
 		setOpen(false);
-		setEditIncome(null);
+		setEditExpense(null);
 	};
 
 	useEffect(() => {
-		const fetchUserIncomes = async () => {
+		const fetchUserExpenses = async () => {
 			try {
 
-				let incomesData = await fetchIncomes(user?.userId, user?.authToken);
+				let expensesData = await fetchExpenses(user?.userId, user?.authToken);
 				let chartObj: any = {};
-				incomesData = incomesData.documents.map((document: any) => {
-					const income = document.fields;
-					const category = income.category.stringValue;
-					const total = parseFloat(income.total.integerValue);
+				expensesData = expensesData.documents.map((document: any) => {
+					const expense = document.fields;
+					const category = expense.category.stringValue;
+					const total = parseFloat(expense.total.integerValue);
 
 					if (chartObj[category]) chartObj[category] += total
 					else chartObj[category] = total;
 					return {
 						docId: document.name.split("/").pop(),
-						name: income?.name?.stringValue,
-						date: income?.date?.timestampValue,
+						name: expense?.name?.stringValue,
+						date: expense?.date?.timestampValue,
 						total,
-						category: income?.category?.stringValue
+						category: expense?.category?.stringValue
 					};
 				})
 
-				setIncomes(incomesData);
+				setExpenses(expensesData);
 				setChartData(
 					Object.entries(chartObj).map(([key, value]) => {
 						return {
@@ -106,25 +106,25 @@ const Incomes = () => {
 					}));
 			} catch (error: any) {
 				console.log(error);
-				console.error('Error fetching incomes:', error.message);
+				console.error('Error fetching expenses:', error.message);
 			}
 		};
 
 
-		fetchUserIncomes();
+		fetchUserExpenses();
 	}, [user?.userId, user?.authToken]);
 
-	const handleDeleteIncome = async (incomeId: string) => {
+	const handleDeleteExpense = async (expenseId: string) => {
 		try {
-			await deleteIncome(user.userId, user.authToken, incomeId);
-			// Update incomes state after deletion
-			setIncomes(prevIncomes => prevIncomes.filter(income => income.docId !== incomeId));
+			await deleteExpense(user.userId, user.authToken, expenseId);
+			// Update expense state after deletion
+			setExpenses(prevExpenses => prevExpenses.filter(expense => expense.docId !== expenseId));
 
 			// Update chartData state after deletion
-			const updatedChartData = incomes.filter(income => income.docId !== incomeId)
-				.reduce((chartObj: { [key: string]: number }, income: any) => {
-					const category = income.category;
-					const total = income.total;
+			const updatedChartData = expenses.filter(expense => expense.docId !== expenseId)
+				.reduce((chartObj: { [key: string]: number }, expense: any) => {
+					const category = expense.category;
+					const total = expense.total;
 					chartObj[category] = (chartObj[category] || 0) + total;
 					return chartObj;
 				}, {});
@@ -137,7 +137,7 @@ const Incomes = () => {
 			}));
 
 		} catch (error: any) {
-			console.error('Error deleting income:', error.message);
+			console.error('Error deleting expense:', error.message);
 		}
 	};
 
@@ -155,13 +155,13 @@ const Incomes = () => {
 				<IconButton
 					icon="pencil"
 					size={20}
-					onPress={() => handleEditIncome(item)}
+					onPress={() => handleEditExpense(item)}
 				/>
 				<TouchableOpacity>
 					<IconButton
 						icon="delete"
 						size={20}
-						onPress={() => handleDeleteIncome(item.docId)}
+						onPress={() => handleDeleteExpense(item.docId)}
 					/>
 				</TouchableOpacity>
 			</View>
@@ -179,7 +179,7 @@ const Incomes = () => {
 				</View>
 				<View style={styles.scrollableView}>
 					<FlatList
-						data={incomes}
+						data={expenses}
 						renderItem={renderItem}
 						keyExtractor={(item: any) => item.docId}
 						initialNumToRender={4}
@@ -188,19 +188,19 @@ const Incomes = () => {
 					/>
 				</View>
 				<View style={styles.chartContainer}>
-					<IncomesChart chartData={chartData} />
+					<ExpensesChart chartData={chartData} />
 				</View>
 			</View>
 			{open && (
 				<View style={styles.modalContainer}>
-					<AddIncome open={open} editIncome={editIncome} onClose={handleClose} />
+					<AddExpense open={open} editExpense={editExpense} onClose={handleClose} />
 				</View>
 			)}
 		</>
 	);
 }
 
-export default Incomes;
+export default Expenses;
 
 const styles = StyleSheet.create({
 	modalContainer: {

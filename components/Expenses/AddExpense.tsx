@@ -1,19 +1,19 @@
-import { Portal, Text, Button, PaperProvider, Dialog, Tooltip, TextInput } from 'react-native-paper';
+import { Modal, Portal, Text, Button, PaperProvider, Dialog, Tooltip, TextInput } from 'react-native-paper';
 import { TouchableOpacity, View, StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react';
 import { fetchCategories } from '../../api/api-categories';
-import { addIncome, updateIncome } from '../../api/api-users';
+import { addExpense, updateExpense } from '../../api/api-users';
 import { UserAuth } from '../../context/AuthContext';
 import { categoryIcons } from '../../services/service';
 
-const AddIncome = ({ open, editIncome, onClose }: any) => {
+const AddExpense = ({ open, editExpense, onClose }: any) => {
     const { user } = UserAuth();
     const [categories, setCategories] = useState([]);
 
     const [formData, setFormData] = useState({
-        selectedCategory: editIncome ? editIncome.category : '',
-        name: editIncome ? editIncome.name : '',
-        total: editIncome ? editIncome.total : ''
+        selectedCategory: editExpense ? editExpense.category : '',
+        name: editExpense ? editExpense.name : '',
+        total: editExpense ? editExpense.total : ''
     });
 
     const handleNameChange = (text: string) => {
@@ -31,14 +31,14 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
         setFormData({ ...formData, selectedCategory: categoryName });
     };
 
-    const handleAddIncome = async () => {
+    const handleAddExpense = async () => {
         setButtonClicked(true);
         try {
             if (!formData.selectedCategory || !formData.name || !formData.total) {
                 return;
             }
 
-            const incomeData = {
+            const expenseData = {
                 name: formData.name,
                 date: new Date().toISOString(),
                 total: parseFloat(formData.total),
@@ -46,17 +46,17 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
             };
 
             let response;
-            if (editIncome) {
-                // Update existing income
-                response = await updateIncome(user.userId, user.authToken, editIncome.docId, incomeData);
+            if (editExpense) {
+                // Update existing expense
+                response = await updateExpense(user.userId, user.authToken, editExpense.docId, expenseData);
             } else {
-                // Add new income
-                response = await addIncome(user.userId, user.authToken, incomeData);
+                // Add new expense
+                response = await addExpense(user.userId, user.authToken, expenseData);
             }
 
             onClose(response);
         } catch (error: any) {
-            console.error('Error adding income:', error.message);
+            console.error('Error adding expense:', error.message);
         }
     };
 
@@ -68,11 +68,9 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
 
         fetchCategories(user.authToken)
             .then((categoriesData: any) => {
-                const incomeCategories = categoriesData.filter((category: any) => category.type === 'incomes');
+                const expenseCategories = categoriesData.filter((category: any) => category.type === 'expenses');
 
-                console.log(categoriesData)
-                setCategories(incomeCategories);
-                console.log('Income Categories:', incomeCategories);
+                setCategories(expenseCategories);
             })
             .catch((error) => {
                 console.error('Error fetching categories:', error);
@@ -80,24 +78,24 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
     }, []);
 
     useEffect(() => {
-        if (open && editIncome) {
+        if (open && editExpense) {
             setFormData({
                 ...formData,
-                selectedCategory: editIncome.category || '',
-                name: editIncome.name || '',
-                total: editIncome.total.toString() || ''
+                selectedCategory: editExpense.category || '',
+                name: editExpense.name || '',
+                total: editExpense.total.toString() || ''
             });
         } else {
             setFormData({ ...formData, selectedCategory: '', name: '', total: '' });
         }
-    }, [open, editIncome]);
+    }, [open, editExpense]);
 
     return (
         <PaperProvider>
             <View>
                 <Portal>
                     <Dialog style={{ backgroundColor: 'white' }} visible={open} onDismiss={() => console.log('closed')}>
-                        <Dialog.Title style={styles.incomeTitle}>Add Income</Dialog.Title>
+                        <Dialog.Title style={styles.expenseTitle}>Add Expense</Dialog.Title>
                         <Dialog.Content>
                             <View>
                                 <View>
@@ -143,10 +141,10 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button textColor='white' style={styles.cancelButton} onPress={onClose}>CANCEL</Button>
-                            {!editIncome ?
-                                <Button textColor='white' style={styles.addButton} onPress={handleAddIncome}>ADD INCOME</Button>
+                            {!editExpense ?
+                                <Button textColor='white' style={styles.addButton} onPress={handleAddExpense}>ADD EXPENSE</Button>
                                 :
-                                <Button textColor='white' style={styles.addButton} onPress={handleAddIncome}>EDIT INCOME</Button>
+                                <Button textColor='white' style={styles.addButton} onPress={handleAddExpense}>EDIT EXPENSE</Button>
                             }
                         </Dialog.Actions>
                     </Dialog>
@@ -156,9 +154,10 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
     )
 }
 
-export default AddIncome
+export default AddExpense;
+
 const styles = StyleSheet.create({
-    incomeTitle: {
+    expenseTitle: {
         display: 'flex',
         textAlign: 'center',
         fontWeight: 'bold'

@@ -5,6 +5,7 @@ import { BottomNavigation, Text, Icon, IconButton } from 'react-native-paper';
 import { UserAuth } from '../../context/AuthContext';
 import Categories from '../Categories/Categories';
 import Dashboard from '../Dashboard/Dashboard';
+import Expenses from '../Expenses/Expenses';
 import Incomes from '../Incomes/Incomes';
 import Login from '../Login/Login';
 import Test from '../Test/Test';
@@ -16,7 +17,7 @@ const DashboardRoute = () => <Test />;
 
 const IncomeRoute = () => <Incomes />;
 
-const ExpensesRoute = () => <Text>Expenses</Text>;
+const ExpensesRoute = () => <Expenses />;
 
 const CategoriesRoute = () => <Categories />;
 

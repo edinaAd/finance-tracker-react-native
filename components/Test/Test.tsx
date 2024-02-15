@@ -26,7 +26,6 @@ const Test = () => {
                 let totalExpenses = 0;
                 const expensesByDate: ExpenseData = {};
 
-
                 expensesData.documents.forEach((document: any) => {
                     const expense = document.fields;
                     const date = new Date(expense.date.timestampValue).toLocaleDateString();
@@ -71,22 +70,21 @@ const Test = () => {
         fetchData();
 
     }, [user?.userId, user?.authToken]);
-	console.log("chartData", chartData)
+
+
 	const sortedChartData = chartData.slice().sort((a, b) => {
-		// Split the date strings into components
 		const [dayA, monthA, yearA] = a[0].split('.');
 		const [dayB, monthB, yearB] = b[0].split('.');
 
-		// Construct Date objects
 		const dateA = new Date(Number(yearA), Number(monthA) - 1, Number(dayA));
 		const dateB = new Date(Number(yearB), Number(monthB) - 1, Number(dayB));
 
-		// Compare the dates
 		return dateA.getTime() - dateB.getTime();
 	});
+
     return (
-        <SafeAreaView>
-            <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.dashboard}>
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <View style={styles.totalIncome}>
@@ -121,10 +119,12 @@ const Test = () => {
 export default Test
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
+        backgroundColor: '#F0F0F0'
+    },
+    dashboard: {
         paddingHorizontal: 20,
         paddingVertical: 90,
-        backgroundColor: '#F0F0F0'
     },
     row: {
         flexDirection: 'row',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
         width: '50%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center', // Aligns items along the cross axis (horizontally)
+        alignItems: 'center', 
     },
     amountColorIncome: {
         fontWeight: 'bold',

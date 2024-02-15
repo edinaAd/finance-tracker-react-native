@@ -1,10 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { BarChart, LineChart } from 'react-native-chart-kit';
-import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
+import { View } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 const DashboardChart = ({ chartData }) => {
-
 
 	const data = {
 		labels: chartData.map(([date]) => date),
@@ -23,7 +20,6 @@ const DashboardChart = ({ chartData }) => {
 		legend: ['Expenses', 'Income'],
 	};
 
-
 	return (
 		<View style={{ marginTop: 40 }}>
 			<LineChart
@@ -37,10 +33,6 @@ const DashboardChart = ({ chartData }) => {
 					decimalPlaces: 0,
 					color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
 					labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-					style: {
-						borderRadius: 16,
-					},
-					
 				}}
 				verticalLabelRotation={15}
 				bezier 
