@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, SafeAreaView, Image, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { Button, IconButton, TextInput } from 'react-native-paper';
 import { UserAuth } from '../../context/AuthContext';
@@ -12,8 +12,10 @@ const SignUp = () => {
 
 	const [registerEmail, setRegisterEmail] = useState("");
 	const [registerPassword, setRegisterPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState('');
 	const [name, setName] = useState("");
 	const [error, setError] = useState('');
+	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
 	const [showPassword, setShowPassword] = React.useState(false);
 
@@ -34,12 +36,22 @@ const SignUp = () => {
 		setError('');
 	};
 
+	const handleConfirmPasswordChange = (text: string) => {
+		setConfirmPassword(text);
+		setError('');
+	};
+
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		setError('');
 		try {
-			if (!name || !registerEmail || !registerPassword) {
+			if (!name || !registerEmail || !registerPassword || !confirmPassword) {
 				setError('All fields are required!');
+				return;
+			}
+
+			if (registerPassword !== confirmPassword) {
+				setError('Passwords do not match');
 				return;
 			}
 
@@ -47,14 +59,28 @@ const SignUp = () => {
 			setName('');
 			setRegisterEmail('');
 			setRegisterPassword('');
+			setConfirmPassword('');
+			setShowSuccessMessage(true);
+
 		} catch (error: any) {
 			if (error.code === "ERR_BAD_REQUEST") setError("Invalid username or password");
 			else setError("Error: Request failed");
 		}
 	};
+
+
+	useEffect(() => {
+		if (showSuccessMessage) {
+			setTimeout(() => {
+				setShowSuccessMessage(false);
+			}, 3000);
+		}
+	}, [showSuccessMessage]);
+
 	return (
 		<SafeAreaView style={styles.container}>
 			{error && <InfoDialog type={MessageType.ERROR} message={error} open={true} ></InfoDialog>}
+			{showSuccessMessage && <InfoDialog type={MessageType.SUCCESS} message="User created successfully!" open={true} />}
 			<KeyboardAvoidingView behavior="padding">
 				<View style={styles.container}>
 					<View >
@@ -89,6 +115,20 @@ const SignUp = () => {
 								label="Password"
 								value={registerPassword}
 								onChangeText={handlePasswordChange}
+								secureTextEntry={!showPassword}
+								style={styles.input}
+							/>
+							<IconButton
+								icon={showPassword ? 'eye-off' : 'eye'}
+								onPress={handleClickShowPassword}
+								style={styles.iconButton}
+							/>
+						</View>
+						<View style={styles.confirmPassword}>
+							<TextInput
+								label="Confirm Password"
+								value={confirmPassword}
+								onChangeText={handleConfirmPasswordChange}
 								secureTextEntry={!showPassword}
 								style={styles.input}
 							/>
@@ -160,6 +200,14 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		width: '100%',
+		paddingBottom: 20
+
+	},
+	confirmPassword: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		width: '100%',
+		paddingBottom: 0
 	},
 	emailContainer: {
 		width: '100%',

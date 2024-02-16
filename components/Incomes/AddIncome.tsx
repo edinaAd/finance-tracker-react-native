@@ -130,7 +130,7 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
                                     <View style={styles.inputContainer}>
                                         <TextInput
                                             label={formData.total === '' ? "$140.55" : ''}
-                                            value={formData.total}
+                                            value={formData.total.toString()}
                                             onChangeText={handleTotalChange}
                                             style={styles.input}
                                         />

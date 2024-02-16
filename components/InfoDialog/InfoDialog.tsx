@@ -3,25 +3,34 @@ import { View, StyleSheet, Platform, Text } from 'react-native';
 import { Button, Snackbar } from 'react-native-paper';
 import { MessageType } from '../../types/MessageType.enum';
 
-
-
 interface Props {
     type: MessageType;
     message: string;
     open: boolean;
 }
-const InfoDialog: React.FC<Props> = ({ type, message, open }) => {
 
+const InfoDialog: React.FC<Props> = ({ type, message, open }) => {
 
     const [state, setState] = React.useState({ open })
     const onDismissSnackBar = () => setState({ ...state, open: false });
+
+    const getSnackbarBackgroundColor = () => {
+		switch (type) {
+			case MessageType.ERROR:
+				return '#D93F62'; 
+			case MessageType.SUCCESS:
+				return '#129B0F';
+			default:
+				return '#D93F62';
+		}
+	};
 
     return (
         <View style={[styles.container, { top: Platform.OS === 'ios' ? 60 : 20 }]}>
             <Snackbar
                 visible={open}
                 onDismiss={onDismissSnackBar}
-                style={styles.snackbar}
+                style={{backgroundColor: getSnackbarBackgroundColor()}}
                 >
                 <Text style={styles.messageText}>{message}</Text>
             </Snackbar>
@@ -36,9 +45,7 @@ const styles = StyleSheet.create({
         zIndex: 9999,
         paddingTop: 100
     },
-    snackbar: {
-        backgroundColor: '#D93F62',
-    },
+
     messageText: {
         fontWeight: 'bold',
         color: 'white',

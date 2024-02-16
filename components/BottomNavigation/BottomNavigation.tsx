@@ -1,13 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { BottomNavigation, Text, Icon, IconButton } from 'react-native-paper';
+import { BottomNavigation, IconButton } from 'react-native-paper';
 import { UserAuth } from '../../context/AuthContext';
 import Categories from '../Categories/Categories';
-import Dashboard from '../Dashboard/Dashboard';
 import Expenses from '../Expenses/Expenses';
 import Incomes from '../Incomes/Incomes';
-import Login from '../Login/Login';
 import Test from '../Test/Test';
 
 
@@ -23,6 +21,7 @@ const CategoriesRoute = () => <Categories />;
 
 
 const BottomNavigationComponent = () => {
+	
 	const { logout } = UserAuth();
 	const navigation = useNavigation();
 
