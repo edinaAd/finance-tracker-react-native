@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { View, Text, SafeAreaView, Image, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { UserAuth } from "../../context/AuthContext";
 import { TextInput, Button, IconButton } from 'react-native-paper';
-import { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import InfoDialog from "../InfoDialog/InfoDialog";

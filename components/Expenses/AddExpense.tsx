@@ -1,12 +1,12 @@
-import { Modal, Portal, Text, Button, PaperProvider, Dialog, Tooltip, TextInput } from 'react-native-paper';
+import { Portal, Text, Button, PaperProvider, Dialog, Tooltip, TextInput } from 'react-native-paper';
 import { TouchableOpacity, View, StyleSheet } from 'react-native'
-import { useEffect, useState } from 'react';
-import { fetchCategories } from '../../api/api-categories';
-import { addExpense, updateExpense } from '../../api/api-users';
+import React, { useEffect, useState } from 'react';
+import { addExpense, updateExpense } from '../../services/users-service';
 import { UserAuth } from '../../context/AuthContext';
 import { categoryIcons } from '../../services/service';
+import { fetchCategories } from '../../services/categories-service';
 
-const AddExpense = ({ open, editExpense, onClose }: any) => {
+const AddExpense = React.memo(({ open, editExpense, onClose }: any) => {
     const { user } = UserAuth();
     const [categories, setCategories] = useState([]);
 
@@ -152,7 +152,7 @@ const AddExpense = ({ open, editExpense, onClose }: any) => {
             </View>
         </PaperProvider>
     )
-}
+})
 
 export default AddExpense;
 

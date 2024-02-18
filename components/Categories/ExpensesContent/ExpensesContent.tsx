@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { Text } from 'react-native-paper';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { UserAuth } from '../../../context/AuthContext';
-import { fetchCategories } from '../../../api/api-categories';
 import { categoryIcons } from '../../../services/service';
+import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
+import { fetchCategories } from '../../../services/categories-service';
 
 
 const ExpensesContent = () => {
 
     const { user } = UserAuth();
 
+    const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -17,6 +19,7 @@ const ExpensesContent = () => {
             console.error('Authentication token not found.');
             return;
         }
+        setLoading(true);
 
         fetchCategories(user.authToken)
             .then((categoriesData: any) => {
@@ -27,24 +30,34 @@ const ExpensesContent = () => {
             })
             .catch((error) => {
                 console.error('Error fetching categories:', error);
-            });
+            })
+            .finally(() => {
+                setLoading(false);
+            })
     }, []);
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.categoriesWrapper}>
-                {categories.map((category, index) => (
-                    <View key={category.docId} style={styles.categoryItem}>
-                        <View style={styles.categoryDiv}>
-                            {categoryIcons[category.name]}
-                        </View>
-                        <Text style={styles.categoryName}>
-                            {category.name}
-                        </Text>
+        <>
+            {loading ? (
+                <LoadingSpinner />
+            ) : (
+                <ScrollView style={styles.container}>
+                    <View style={styles.categoriesWrapper}>
+                        {categories.map((category, index) => (
+                            <View key={category.id} style={styles.categoryItem}>
+                                <View style={styles.categoryDiv}>
+                                    {categoryIcons[category.name]}
+                                </View>
+                                <Text style={styles.categoryName}>
+                                    {category.name}
+                                </Text>
+                            </View>
+                        ))}
                     </View>
-                ))}
-            </View>
-        </ScrollView>
+                </ScrollView>
+            )
+            }
+        </>
     )
 }
 

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Text, Button, IconButton } from 'react-native-paper';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import { UserAuth } from '../../context/AuthContext';
-import { deleteExpense, fetchExpenses } from '../../api/api-users';
+import { deleteExpense, fetchExpenses } from '../../services/users-service';
 import ExpensesChart from './ExpensesChart';
 import AddExpense from './AddExpense';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const Expenses = () => {
 	const { user } = UserAuth();
@@ -13,6 +14,7 @@ const Expenses = () => {
 	const [expenses, setExpenses] = useState<any[]>([]);
 	const [chartData, setChartData] = useState<{ name: string, value: number }[]>([]);
 	const [editExpense, setEditExpense] = useState(null);
+	const [expensesLoading, setExpensesLoading] = useState(false);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -47,7 +49,6 @@ const Expenses = () => {
 
 
 	const handleClose = (response: any | null) => {
-		console.log(response);
 		if (response.fields) {
 			const expense = response.fields;
 			const total = parseFloat(expense.total.integerValue);
@@ -78,23 +79,31 @@ const Expenses = () => {
 		const fetchUserExpenses = async () => {
 			try {
 
+				setExpensesLoading(true);
 				let expensesData = await fetchExpenses(user?.userId, user?.authToken);
 				let chartObj: any = {};
-				expensesData = expensesData.documents.map((document: any) => {
-					const expense = document.fields;
-					const category = expense.category.stringValue;
-					const total = parseFloat(expense.total.integerValue);
 
-					if (chartObj[category]) chartObj[category] += total
-					else chartObj[category] = total;
-					return {
-						docId: document.name.split("/").pop(),
-						name: expense?.name?.stringValue,
-						date: expense?.date?.timestampValue,
-						total,
-						category: expense?.category?.stringValue
-					};
-				})
+				if (expensesData && expensesData.documents && Array.isArray(expensesData.documents)) {
+					expensesData = expensesData.documents && expensesData.documents.map((document: any) => {
+						const expense = document.fields;
+						const category = expense.category.stringValue;
+						const total = parseFloat(expense.total.integerValue);
+
+						if (chartObj[category]) chartObj[category] += total
+						else chartObj[category] = total;
+						return {
+							docId: document.name.split("/").pop(),
+							name: expense?.name?.stringValue,
+							date: expense?.date?.timestampValue,
+							total,
+							category: expense?.category?.stringValue
+						};
+					})
+					setExpensesLoading(false);
+				} else {
+					setExpensesLoading(false);
+					expensesData = [];
+				}
 
 				setExpenses(expensesData);
 				setChartData(
@@ -103,7 +112,8 @@ const Expenses = () => {
 							name: key,
 							value
 						} as { name: string, value: number }
-					}));
+					})
+				);
 			} catch (error: any) {
 				console.log(error);
 				console.error('Error fetching expenses:', error.message);
@@ -187,9 +197,24 @@ const Expenses = () => {
 						showsVerticalScrollIndicator={true}
 					/>
 				</View>
-				<View style={styles.chartContainer}>
-					<ExpensesChart chartData={chartData} />
-				</View>
+				{expensesLoading ? (
+					// Show loader while data is being fetched
+					<View>
+						<LoadingSpinner />
+					</View>
+				) : (
+					// Show chart or no data message based on chartData length
+					<View>
+						{chartData.length > 0 ? (
+							<ExpensesChart chartData={chartData} />
+						) : (
+							<View style={styles.noDataContainer}>
+								<Text style={styles.noDataText}>Oops! Something went wrong while fetching expenses. Why not try adding some expenses and see the charts?</Text>
+							</View>
+						)}
+					</View>
+
+				)}
 			</View>
 			{open && (
 				<View style={styles.modalContainer}>
@@ -280,5 +305,20 @@ const styles = StyleSheet.create({
 
 	dateTime: {
 		fontStyle: 'italic'
+	},
+
+	noDataContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 30
+	},
+	
+	noDataText: {
+		fontSize: 16,
+		color: 'black',
+		fontWeight: 'bold',
+		fontStyle: 'italic',
+		textAlign: 'center',
+		marginTop: 20,
 	},
 });

@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { auth } from '../firebase-config';
 import axios from 'axios';
-import { addUserToFirestore } from '../api/api-users';
+import { addUserToFirestore } from '../services/users-service';
 
 type User = {
 	name?: string;

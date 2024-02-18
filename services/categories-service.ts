@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://firestore.googleapis.com/v1/projects/fir-tracker-6c099/databases/(default)/documents';
+const BASE_URL = process.env.REACT_APP_FIRESTORE_BASE_URL;
 
 export const fetchCategories = async (authToken: any) => {
     try {
@@ -10,7 +10,7 @@ export const fetchCategories = async (authToken: any) => {
             }
         };
 
-        const response = await axios.get(`${API_URL}/categories`, axiosConfig);
+        const response = await axios.get(`${BASE_URL}/categories`, axiosConfig);
         return response.data.documents.map((doc: any) => ({
             id: doc.name.split('/').pop(),
             name: doc.fields.name.stringValue,

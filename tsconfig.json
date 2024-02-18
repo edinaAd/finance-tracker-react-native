@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["react-native", "react-native-paper"],
-    
+    "types": ["react-native", "react-native-paper", "node"],
     "skipLibCheck": true
 
   },

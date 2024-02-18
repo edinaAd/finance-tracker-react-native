@@ -1,12 +1,13 @@
 import { Portal, Text, Button, PaperProvider, Dialog, Tooltip, TextInput } from 'react-native-paper';
 import { TouchableOpacity, View, StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react';
-import { fetchCategories } from '../../api/api-categories';
-import { addIncome, updateIncome } from '../../api/api-users';
+import { addIncome, updateIncome } from '../../services/users-service';
 import { UserAuth } from '../../context/AuthContext';
 import { categoryIcons } from '../../services/service';
+import React from 'react';
+import { fetchCategories } from '../../services/categories-service';
 
-const AddIncome = ({ open, editIncome, onClose }: any) => {
+const AddIncome = React.memo(({ open, editIncome, onClose }: any) => {
     const { user } = UserAuth();
     const [categories, setCategories] = useState([]);
 
@@ -154,7 +155,7 @@ const AddIncome = ({ open, editIncome, onClose }: any) => {
             </View>
         </PaperProvider>
     )
-}
+})
 
 export default AddIncome
 const styles = StyleSheet.create({

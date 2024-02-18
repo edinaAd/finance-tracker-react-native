@@ -3,8 +3,9 @@ import { Text, Button, IconButton } from 'react-native-paper';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import IncomesChart from './IncomesChart';
 import { UserAuth } from '../../context/AuthContext';
-import { deleteIncome, fetchIncomes } from '../../api/api-users';
+import { deleteIncome, fetchIncomes } from '../../services/users-service';
 import AddIncome from './AddIncome';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const Incomes = () => {
 	const { user } = UserAuth();
@@ -13,6 +14,7 @@ const Incomes = () => {
 	const [incomes, setIncomes] = useState<any[]>([]);
 	const [chartData, setChartData] = useState<{ name: string, value: number }[]>([]);
 	const [editIncome, setEditIncome] = useState(null);
+	const [incomesLoading, setIncomesLoading] = useState(false);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -78,24 +80,31 @@ const Incomes = () => {
 		const fetchUserIncomes = async () => {
 			try {
 
+				setIncomesLoading(true);
 				let incomesData = await fetchIncomes(user?.userId, user?.authToken);
 				let chartObj: any = {};
-				incomesData = incomesData.documents.map((document: any) => {
-					const income = document.fields;
-					const category = income.category.stringValue;
-					const total = parseFloat(income.total.integerValue);
 
-					if (chartObj[category]) chartObj[category] += total
-					else chartObj[category] = total;
-					return {
-						docId: document.name.split("/").pop(),
-						name: income?.name?.stringValue,
-						date: income?.date?.timestampValue,
-						total,
-						category: income?.category?.stringValue
-					};
-				})
+				if (incomesData && incomesData.documents && Array.isArray(incomesData.documents)) {
+					incomesData = incomesData.documents.map((document: any) => {
+						const income = document.fields;
+						const category = income.category.stringValue;
+						const total = parseFloat(income.total.integerValue);
 
+						if (chartObj[category]) chartObj[category] += total
+						else chartObj[category] = total;
+						return {
+							docId: document.name.split("/").pop(),
+							name: income?.name?.stringValue,
+							date: income?.date?.timestampValue,
+							total,
+							category: income?.category?.stringValue
+						};
+					})
+					setIncomesLoading(false);
+				} else {
+					setIncomesLoading(false);
+					incomesData = [];
+				}
 				setIncomes(incomesData);
 				setChartData(
 					Object.entries(chartObj).map(([key, value]) => {
@@ -103,7 +112,8 @@ const Incomes = () => {
 							name: key,
 							value
 						} as { name: string, value: number }
-					}));
+					})
+				);
 			} catch (error: any) {
 				console.log(error);
 				console.error('Error fetching incomes:', error.message);
@@ -187,9 +197,24 @@ const Incomes = () => {
 						showsVerticalScrollIndicator={true}
 					/>
 				</View>
-				<View style={styles.chartContainer}>
-					<IncomesChart chartData={chartData} />
-				</View>
+				{incomesLoading ? (
+					// Show loader while data is being fetched
+					<View>
+						<LoadingSpinner />
+					</View>
+				) : (
+					// Show chart or no data message based on chartData length
+					<View>
+						{chartData.length > 0 ? (
+							<IncomesChart chartData={chartData} />
+						) : (
+							<View style={styles.noDataContainer}>
+								<Text style={styles.noDataText}>Oops! Something went wrong while fetching incomes. Why not try adding some incomes and see the charts?</Text>
+							</View>
+						)}
+					</View>
+
+				)}
 			</View>
 			{open && (
 				<View style={styles.modalContainer}>
@@ -280,5 +305,20 @@ const styles = StyleSheet.create({
 
 	dateTime: {
 		fontStyle: 'italic'
+	},
+
+	noDataContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 30
+	},
+	
+	noDataText: {
+		fontSize: 16,
+		color: 'black',
+		fontWeight: 'bold',
+		fontStyle: 'italic',
+		textAlign: 'center',
+		marginTop: 20,
 	},
 });

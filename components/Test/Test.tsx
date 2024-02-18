@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, Text, View, StyleSheet } from "react-native";
-import { fetchExpenses, fetchIncomes } from '../../api/api-users';
+import { fetchExpenses, fetchIncomes } from '../../services/users-service';
 import { UserAuth } from '../../context/AuthContext';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import DashboardChart from './DashboardChart';
-
 
 interface ExpenseData {
     [date: string]: number;
@@ -15,6 +15,8 @@ const Test = () => {
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [totalIncome, setTotalIncome] = useState(0);
     const [chartData, setChartData] = useState<any>([]);
+    const [loading, setLoading] = useState(false);
+
 
     const balance = totalIncome - totalExpenses;
 
@@ -22,11 +24,12 @@ const Test = () => {
         const fetchData = async () => {
             try {
                 // Fetch expenses data
+                setLoading(true);
                 const expensesData = await fetchExpenses(user?.userId, user?.authToken);
                 let totalExpenses = 0;
                 const expensesByDate: ExpenseData = {};
 
-                expensesData.documents.forEach((document: any) => {
+                expensesData?.documents?.forEach((document: any) => {
                     const expense = document.fields;
                     const date = new Date(expense.date.timestampValue).toLocaleDateString();
                     totalExpenses += parseFloat(expense.total.integerValue);
@@ -43,7 +46,7 @@ const Test = () => {
                 let totalIncome = 0;
                 const incomeByDate: ExpenseData = {};
 
-                incomesData.documents.forEach((document: any) => {
+                incomesData?.documents?.forEach((document: any) => {
                     const income = document.fields;
                     const date = new Date(income.date.timestampValue).toLocaleDateString();
 
@@ -58,10 +61,11 @@ const Test = () => {
                 const dates = Object.keys({ ...expensesByDate, ...incomeByDate }).sort();
                 const chartData = dates.map(date => [date, expensesByDate[date] || 0, incomeByDate[date] || 0]);
 
-                console.log(chartData)
                 setChartData(chartData);
                 setTotalExpenses(totalExpenses);
                 setTotalIncome(totalIncome);
+                setLoading(false);
+
             } catch (error: any) {
                 console.error('Error fetching data:', error.message);
             }
@@ -72,15 +76,15 @@ const Test = () => {
     }, [user?.userId, user?.authToken]);
 
 
-	const sortedChartData = chartData.slice().sort((a, b) => {
-		const [dayA, monthA, yearA] = a[0].split('.');
-		const [dayB, monthB, yearB] = b[0].split('.');
+    const sortedChartData = chartData.slice().sort((a, b) => {
+        const [dayA, monthA, yearA] = a[0].split('.');
+        const [dayB, monthB, yearB] = b[0].split('.');
 
-		const dateA = new Date(Number(yearA), Number(monthA) - 1, Number(dayA));
-		const dateB = new Date(Number(yearB), Number(monthB) - 1, Number(dayB));
+        const dateA = new Date(Number(yearA), Number(monthA) - 1, Number(dayA));
+        const dateB = new Date(Number(yearB), Number(monthB) - 1, Number(dayB));
 
-		return dateA.getTime() - dateB.getTime();
-	});
+        return dateA.getTime() - dateB.getTime();
+    });
 
     return (
         <SafeAreaView style={styles.container}>
@@ -107,9 +111,24 @@ const Test = () => {
                         </View>
                     </View>
                 </View>
-                <View>
-                    {sortedChartData.length > 0 && <DashboardChart chartData={sortedChartData} />}
-                </View>
+                {loading ? (
+                    // Show loader while data is being fetched
+                    <View>
+                        <LoadingSpinner />
+                    </View>
+                ) : (
+                    // Show chart or no data message based on chartData length
+                    <View>
+                        {chartData.length > 0 ? (
+                            <DashboardChart chartData={chartData} />
+                        ) : (
+                            <View style={styles.noDataContainer}>
+                                <Text style={styles.noDataText}>No expense or income data found!</Text>
+                            </View>
+                        )}
+                    </View>
+
+                )}
             </View>
         </SafeAreaView>
         // </>
@@ -154,7 +173,7 @@ const styles = StyleSheet.create({
         width: '50%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center', 
+        alignItems: 'center',
     },
     amountColorIncome: {
         fontWeight: 'bold',
@@ -173,5 +192,17 @@ const styles = StyleSheet.create({
     },
     text: {
         textAlign: 'center',
+    },
+    noDataContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    noDataText: {
+        fontSize: 16,
+        color: 'black',
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        textAlign: 'center',
+        marginTop: 20,
     },
 });
