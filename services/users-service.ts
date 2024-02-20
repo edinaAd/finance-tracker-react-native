@@ -170,7 +170,7 @@ export const updateExpense = async (userId: string, authToken: string, expenseId
                 }
             }
         );
-        
+
         return response.data;
     } catch (error: any) {
         throw new Error('Error adding expense: ' + error.message);

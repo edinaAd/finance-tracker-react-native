@@ -94,7 +94,7 @@ const AddExpense = React.memo(({ open, editExpense, onClose }: any) => {
         <PaperProvider>
             <View>
                 <Portal>
-                    <Dialog style={{ backgroundColor: 'white' }} visible={open} onDismiss={() => console.log('closed')}>
+                    <Dialog style={{ backgroundColor: 'white' }} visible={open}>
                         <Dialog.Title style={styles.expenseTitle}>Add Expense</Dialog.Title>
                         <Dialog.Content>
                             <View>

@@ -7,17 +7,16 @@ import { useNavigation } from "@react-navigation/native";
 import InfoDialog from "../InfoDialog/InfoDialog";
 import { MessageType } from "../../types/MessageType.enum";
 
-
 function LoginScreen() {
 	const { login, user } = UserAuth();
 	const navigation: any = useNavigation();
 
 	useEffect(() => {
-		if(user) {
-			console.log('hina', user)
+		if (user) {
 			navigation.navigate('dashboard');
 		}
-	}, [user])
+	}, [user]);
+
 	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
 	const [error, setError] = useState('');
@@ -28,42 +27,35 @@ function LoginScreen() {
 
 	const handleEmailChange = (text: string) => {
 		setLoginEmail(text);
-		setError(''); 
+		setError('');
 	};
 
 	const handlePasswordChange = (text: string) => {
 		setLoginPassword(text);
-		setError(''); 
+		setError('');
 	};
-
 
 	const handleLogin = async (e: any) => {
 		e.preventDefault();
 		setError('')
-		console.log(loginEmail, loginPassword)
 		try {
 			if (!loginEmail || !loginPassword) {
 				setError('Username and password are required');
 				return;
 			}
-			
-            const response: any = await login(loginEmail, loginPassword);
-			console.log("response",response);
-	
+
+			const response: any = await login(loginEmail, loginPassword);
+
 			if (response && response.data) {
 				const authToken = response.data.idToken;
 				AsyncStorage.setItem('authToken', authToken);
-				// navigate('/dashboard');            
 				navigation.navigate('dashboard');
 
 			} else {
 				setError('Response data is empty');
 			}
-			// navigate('/dashboard');
 
 		} catch (error: any) {
-			console.log("login",error)
-
 			if (error.code === "ERR_BAD_REQUEST") setError("Invalid username or password");
 			else setError("Error: Request failed");
 		}
@@ -71,7 +63,7 @@ function LoginScreen() {
 
 	return (
 		<SafeAreaView style={styles.container}>
-			{ error && <InfoDialog type={MessageType.ERROR} message={error} open={true} ></InfoDialog>}
+			{error && <InfoDialog type={MessageType.ERROR} message={error} open={true} ></InfoDialog>}
 			<KeyboardAvoidingView behavior="padding">
 				<View style={styles.container}>
 					<View >
@@ -79,7 +71,6 @@ function LoginScreen() {
 							source={require('../../images/welcome.jpg')}
 							style={{ width: 200, height: 200 }}
 						/>
-
 					</View>
 					<View>
 						<Text style={styles.title}>Welcome to SpendWise</Text>
@@ -108,8 +99,6 @@ function LoginScreen() {
 							/>
 						</View>
 					</View>
-
-
 					<View style={styles.buttonContainer}>
 						<Button textColor="white" labelStyle={{ fontWeight: 'bold' }} style={styles.button} onPress={handleLogin}>
 							LOG IN

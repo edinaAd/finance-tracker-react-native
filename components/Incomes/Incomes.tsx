@@ -49,7 +49,6 @@ const Incomes = () => {
 
 
 	const handleClose = (response: any | null) => {
-		console.log(response);
 		if (response.fields) {
 			const income = response.fields;
 			const total = parseFloat(income.total.integerValue);
@@ -115,7 +114,6 @@ const Incomes = () => {
 					})
 				);
 			} catch (error: any) {
-				console.log(error);
 				console.error('Error fetching incomes:', error.message);
 			}
 		};
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		padding: 30
 	},
-	
+
 	noDataText: {
 		fontSize: 16,
 		color: 'black',

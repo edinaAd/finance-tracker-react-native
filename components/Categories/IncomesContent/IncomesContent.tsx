@@ -6,7 +6,6 @@ import { categoryIcons } from '../../../services/service';
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import { fetchCategories } from '../../../services/categories-service';
 
-
 const IncomesContent = () => {
 
     const { user } = UserAuth();
@@ -25,7 +24,6 @@ const IncomesContent = () => {
             .then((categoriesData: any) => {
                 const incomeCategories = categoriesData.filter((category: any) => category.type === 'incomes');
 
-                console.log(categoriesData)
                 setCategories(incomeCategories);
             })
             .catch((error) => {

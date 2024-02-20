@@ -115,7 +115,6 @@ const Expenses = () => {
 					})
 				);
 			} catch (error: any) {
-				console.log(error);
 				console.error('Error fetching expenses:', error.message);
 			}
 		};
@@ -312,7 +311,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		padding: 30
 	},
-	
+
 	noDataText: {
 		fontSize: 16,
 		color: 'black',

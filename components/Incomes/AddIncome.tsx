@@ -71,9 +71,7 @@ const AddIncome = React.memo(({ open, editIncome, onClose }: any) => {
             .then((categoriesData: any) => {
                 const incomeCategories = categoriesData.filter((category: any) => category.type === 'incomes');
 
-                console.log(categoriesData)
                 setCategories(incomeCategories);
-                console.log('Income Categories:', incomeCategories);
             })
             .catch((error) => {
                 console.error('Error fetching categories:', error);
@@ -97,7 +95,7 @@ const AddIncome = React.memo(({ open, editIncome, onClose }: any) => {
         <PaperProvider>
             <View>
                 <Portal>
-                    <Dialog style={{ backgroundColor: 'white' }} visible={open} onDismiss={() => console.log('closed')}>
+                    <Dialog style={{ backgroundColor: 'white' }} visible={open}>
                         <Dialog.Title style={styles.incomeTitle}>Add Income</Dialog.Title>
                         <Dialog.Content>
                             <View>

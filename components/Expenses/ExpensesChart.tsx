@@ -6,24 +6,24 @@ const screenWidth = Dimensions.get('window').width;
 
 const ExpensesChart = ({ chartData }) => {
 
-    const generateRandomColors = (numColors) => {
+    const generateRandomColors = (numColors: any) => {
         const colors = [];
         const validHexChars = '0123456789ABCDEF';
-        
+
         for (let i = 0; i < numColors; i++) {
-            let color;
-            
+            let color: any;
+
             do {
                 color = '#';
-            
+
                 for (let j = 0; j < 6; j++) {
                     color += validHexChars[Math.floor(Math.random() * 16)];
                 }
             } while (color === '#FFFFFF');
-            
+
             colors.push(color);
         }
-        
+
         return colors;
     };
 

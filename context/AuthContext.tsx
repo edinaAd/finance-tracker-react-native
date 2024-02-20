@@ -26,16 +26,13 @@ export const AuthContextProvider = ({ children }: any) => {
 
 	useEffect(() => {
 		AsyncStorage.getItem('userData').then((userDataString: any) => {
-			console.log("userData", userDataString);
 			if (userDataString) {
 				const parsedUserData = JSON.parse(userDataString);
 				setUser(parsedUserData.user);
-			} 
+			}
 		}).catch(error => {
 			console.error('Error retrieving user data:', error);
-
 		})
-
 	}, []);
 
 	const createUser = async (email: string, password: string, name: string): Promise<void> => {
@@ -52,9 +49,6 @@ export const AuthContextProvider = ({ children }: any) => {
 
 			await addUserToFirestore(email, name, userId, authToken);
 
-			console.log('User created successfully.');
-			console.log('ID Token:', response.data.idToken);
-
 		} catch (error: any) {
 			console.error('Error creating user:', error.message);
 			throw error;
@@ -69,7 +63,6 @@ export const AuthContextProvider = ({ children }: any) => {
 				returnSecureToken: true
 			});
 
-			console.log(response)
 			const userData: User = {
 				name: response.data.displayName,
 				authToken: response.data.idToken,
@@ -79,11 +72,6 @@ export const AuthContextProvider = ({ children }: any) => {
 			await AsyncStorage.setItem('userData', JSON.stringify({ user: userData }));
 
 			setUser(userData);
-
-
-			console.log('User logged in successfully.');
-			console.log('ID Token:', response.data.idToken);
-
 			return response;
 		} catch (error: any) {
 			console.error('Error logging in:', error.message);
@@ -94,9 +82,9 @@ export const AuthContextProvider = ({ children }: any) => {
 
 	const logout = async (): Promise<void> => {
 		try {
-			await signOut(auth); 
+			await signOut(auth);
 			await AsyncStorage.clear();
-			
+
 			setUser(null);
 		} catch (error) {
 			console.error('Error logging out:', error);

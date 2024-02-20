@@ -25,7 +25,6 @@ const ExpensesContent = () => {
             .then((categoriesData: any) => {
                 const expenseCategories = categoriesData.filter((category: any) => category.type === 'expenses');
 
-                console.log(categoriesData)
                 setCategories(expenseCategories);
             })
             .catch((error) => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
-import { Text, SegmentedButtons } from 'react-native-paper';
+import { SegmentedButtons } from 'react-native-paper';
 import ExpensesContent from './ExpensesContent/ExpensesContent';
 import IncomesContent from './IncomesContent/IncomesContent';
 
@@ -22,7 +22,6 @@ const Categories = () => {
 		<SafeAreaView style={styles.container}>
 			<View style={styles.mainView}>
 				<View style={styles.segmentedButtons}>
-
 					<SegmentedButtons
 						value={value}
 						style={styles.buttons}

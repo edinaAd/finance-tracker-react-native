@@ -5,12 +5,12 @@ import { Dimensions, View, Text } from 'react-native';
 const screenWidth = Dimensions.get('window').width;
 
 const IncomesChart = ({ chartData }) => {
-    const generateRandomColors = (numColors) => {
+    const generateRandomColors = (numColors: any) => {
         const colors = [];
         const validHexChars = '0123456789ABCDEF';
 
         for (let i = 0; i < numColors; i++) {
-            let color;
+            let color: any;
 
             do {
                 color = '#';

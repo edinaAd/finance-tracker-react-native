@@ -144,8 +144,6 @@ const SignUp = () => {
 							/>
 						</View>
 					</View>
-
-
 					<View style={styles.buttonContainer}>
 						<Button textColor="white" labelStyle={{ fontWeight: 'bold' }} style={styles.button} onPress={handleSubmit}>
 							SIGN UP
